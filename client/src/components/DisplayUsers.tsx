@@ -13,6 +13,39 @@ const DisplayData = () => {
     nationality: null,
   });
 
+  // Writing to the data using useMutation hook
+  /**
+   * Defining this piece of code before useQuery hook
+   * If we don't do that then we will get an error
+   * Error: Rendered more hooks than during the previous render
+   * This occurs when we conditionally call a hook or return early before all hooks have run
+   * In useQuery hook it returns <p>...</p> while loading data
+   * So it returns before useMutation hook ever ran and this breaks the code
+   */
+  const [createUser, { error: mutationError }] =
+    useMutation(CREATE_USER_MUTATION);
+  if (mutationError) {
+    console.log(mutationError);
+  }
+
+  const handleOnSubmit = (e: React.FormEvent<HTMLElement>) => {
+    e.preventDefault();
+
+    createUser({
+      variables: {
+        input: {
+          name: userDetails.name,
+          username: userDetails.username,
+          age: userDetails.age,
+          nationality: userDetails.nationality,
+        },
+      },
+    });
+
+    // Refecthing the new data
+    refetch();
+  };
+
   // Getting data from the server using useQuery hook
   const { data, loading, error, refetch } = useQuery(QUERY_ALL_USERS);
   if (loading) {
@@ -22,34 +55,9 @@ const DisplayData = () => {
     console.log(error);
   }
 
-  // Writing to the data using useMutation hook
-  const [createUser, { error: mutationError }] =
-    useMutation(CREATE_USER_MUTATION);
-  if (mutationError) {
-    console.log(mutationError);
-  }
-
   return (
     <>
-      <form
-        className="m-3"
-        onSubmit={(e) => {
-          e.preventDefault();
-          console.log(userDetails);
-          createUser({
-            variables: {
-              input: {
-                name: userDetails.name,
-                username: userDetails.username,
-                age: userDetails.age,
-                nationality: userDetails.nationality,
-              },
-            },
-          });
-          // Refecthing the new data
-          refetch();
-        }}
-      >
+      <form className="m-3" onSubmit={handleOnSubmit}>
         <div className="row">
           {/* Name */}
           <div className="col-12 col-md-6">
