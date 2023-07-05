@@ -1,20 +1,20 @@
-import { useQuery } from "@apollo/client";
+import { useState } from "react";
+import { useQuery, useMutation } from "@apollo/client";
 
-import QUERY_ALL_USERS from "../queries/users";
+import { QUERY_ALL_USERS, CREATE_USER_MUTATION } from "../queries/users";
+import { userDetails, user } from "../types/userTypes";
 
 const DisplayData = () => {
-  interface user {
-    id: number;
-    name: String;
-    username: String;
-    age: number;
-    nationality: String;
-  }
+  // User State
+  const [userDetails, setuserDetails] = useState<userDetails>({
+    name: null,
+    username: null,
+    age: null,
+    nationality: null,
+  });
 
-  const { data, loading, error } = useQuery(QUERY_ALL_USERS);
-  if (data) {
-    console.log(data);
-  }
+  // Getting data from the server using useQuery hook
+  const { data, loading, error, refetch } = useQuery(QUERY_ALL_USERS);
   if (loading) {
     return <p>Data is loading ...</p>;
   }
@@ -22,8 +22,103 @@ const DisplayData = () => {
     console.log(error);
   }
 
+  // Writing to the data using useMutation hook
+  const [createUser, { error: mutationError }] =
+    useMutation(CREATE_USER_MUTATION);
+  if (mutationError) {
+    console.log(mutationError);
+  }
+
   return (
     <>
+      <form
+        className="m-3"
+        onSubmit={(e) => {
+          e.preventDefault();
+          console.log(userDetails);
+          createUser({
+            variables: {
+              input: {
+                name: userDetails.name,
+                username: userDetails.username,
+                age: userDetails.age,
+                nationality: userDetails.nationality,
+              },
+            },
+          });
+          // Refecthing the new data
+          refetch();
+        }}
+      >
+        <div className="row">
+          {/* Name */}
+          <div className="col-12 col-md-6">
+            <label className="form-label">Name</label>
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Name..."
+              name="name"
+              value={userDetails.name ? userDetails.name : ""}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                setuserDetails({ ...userDetails, name: e.target.value });
+              }}
+            />
+          </div>
+          {/* Username */}
+          <div className="col-12 col-md-6">
+            <label className="form-label">Username</label>
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Username..."
+              name="username"
+              value={userDetails.username ? userDetails.username : ""}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                setuserDetails({ ...userDetails, username: e.target.value });
+              }}
+            />
+          </div>
+        </div>
+        <div className="row">
+          {/* age */}
+          <div className="col-12 col-md-6">
+            <label className="form-label">Age</label>
+            <input
+              type="number"
+              className="form-control"
+              placeholder="Age..."
+              name="age"
+              value={userDetails.age ? userDetails.age : ""}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                setuserDetails({ ...userDetails, age: Number(e.target.value) });
+              }}
+            />
+          </div>
+          {/* Nationality */}
+          <div className="col-12 col-md-6">
+            <label className="form-label">Nationality</label>
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Nationality..."
+              name="nationality"
+              value={userDetails.nationality ? userDetails.nationality : ""}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                setuserDetails({
+                  ...userDetails,
+                  nationality: e.target.value.toUpperCase(),
+                });
+              }}
+            />
+          </div>
+        </div>
+
+        <button type="submit" className="btn btn-primary my-3">
+          Submit
+        </button>
+      </form>
+
       <h1 className="m-3">All Users</h1>
       <div className="d-flex flex-wrap">
         {data &&

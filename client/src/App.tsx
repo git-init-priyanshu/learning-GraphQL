@@ -22,6 +22,7 @@ const App = () => {
     )
   );
 
+  // Defining Apollo Client
   const client = new ApolloClient({
     cache: new InMemoryCache(),
     uri: "http://localhost:4000/",
@@ -37,4 +38,5 @@ const App = () => {
 const Root = () => {
   return <Navbar />;
 };
+
 export default App;

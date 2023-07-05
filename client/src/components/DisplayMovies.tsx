@@ -2,14 +2,9 @@ import { useQuery } from "@apollo/client";
 
 import DisplayMovie from "./DisplayMovie";
 import { QUERY_ALL_MOVIES } from "../queries/movies";
+import { movie } from "../types/movieTypes";
 
 const DisplayMovies = () => {
-  interface movie {
-    name: string;
-    yearOfPublication: number;
-    isInTheaters: boolean;
-  }
-
   const { data: movieData } = useQuery(QUERY_ALL_MOVIES);
 
   return (
