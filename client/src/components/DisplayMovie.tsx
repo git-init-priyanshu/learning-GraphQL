@@ -1,25 +1,29 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLazyQuery } from "@apollo/client";
 
 import { QUERY_MOVIE } from "../queries/movies";
 
-const DisplayMovie = () => {
-  const [movieSearched, setMovieSearched] = useState("");
+interface movieProps {
+  movieName: string;
+}
 
-  const [fetchMovie, { loading, data, error }] = useLazyQuery(QUERY_MOVIE, {
-    variables: { name: "Superbad" },
-  });
+const DisplayMovie = ({ movieName }: movieProps) => {
+  const [movieSearched, setMovieSearched] = useState<string>("");
 
+  useEffect(() => {
+    fetchMovie({ variables: { name: movieName } });
+  }, [movieName]);
+
+  const handleOnSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    fetchMovie({ variables: { name: movieSearched } });
+  };
+
+  const [fetchMovie, { loading, data, error }] = useLazyQuery(QUERY_MOVIE);
   if (loading) return <p>Loading ...</p>;
   if (error) {
     console.log(error);
   }
-
-  const handleOnSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    // fetchMovie();
-    fetchMovie({ variables: { name: movieSearched } });
-  };
 
   return (
     <div>
@@ -41,14 +45,28 @@ const DisplayMovie = () => {
       <div>
         {data && (
           <div className="card m-3">
-            <div className="card-body">
-              <p className="card-text">Name: {data.movie.name}</p>
-              <p className="card-text">
-                Year of Publication: {data.movie.yearOfPublication}
-              </p>
-              <p className="card-text">
-                Is in Theaters?: {data.movie.isInTheaters ? "Yes" : "No"}
-              </p>
+            <div className="row g-0">
+              <div className="col-md-6">
+                <div className="card-body">
+                  <h5 className="card-title fs-1">{data.movie.name}</h5>
+                  <p className="card-text">{data.movie.yearOfPublication}</p>
+                  <p className="card-text">
+                    {data.movie.isInTheaters
+                      ? "In theaters now!"
+                      : "Comming Soom"}
+                  </p>
+                </div>
+              </div>
+              <div
+                className="col-md-6 d-flex justify-content-center align-items-center"
+                style={{ height: "30rem", backgroundColor: "#e2e2e2" }}
+              >
+                <img
+                  src={data.movie.img}
+                  alt=""
+                  style={{ objectFit: "contain", height: "100%" }}
+                />
+              </div>
             </div>
           </div>
         )}

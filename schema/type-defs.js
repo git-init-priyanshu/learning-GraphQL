@@ -14,6 +14,7 @@ const typeDefs = `#graphql
     name: String!
     yearOfPublication: Int!
     isInTheaters: Boolean!
+    img: String!
   }
 
   type Query {

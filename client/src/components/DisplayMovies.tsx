@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useQuery } from "@apollo/client";
 
 import DisplayMovie from "./DisplayMovie";
@@ -7,6 +8,8 @@ import { movie } from "../types/movieTypes";
 const DisplayMovies = () => {
   const { data: movieData } = useQuery(QUERY_ALL_MOVIES);
 
+  const [searchMovie, setSearchMovie] = useState<string>("");
+
   return (
     <>
       <h1 className="d-flex m-3">All Movies</h1>
@@ -14,16 +17,20 @@ const DisplayMovies = () => {
         {movieData &&
           movieData.movies.map((movie: movie) => {
             return (
-              <div key={movie.name} className="card">
-                <div className="card-body">
-                  <p className="card-text"> {movie.name}</p>
-                </div>
-              </div>
+              <button
+                key={movie.name}
+                onClick={() => {
+                  setSearchMovie(movie.name);
+                }}
+                className="btn btn-outline-primary"
+              >
+                {movie.name}
+              </button>
             );
           })}
       </div>
       <hr />
-      <DisplayMovie />
+      <DisplayMovie movieName={searchMovie} />
     </>
   );
 };

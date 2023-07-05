@@ -14,6 +14,7 @@ export const QUERY_MOVIE = gql`
       name
       yearOfPublication
       isInTheaters
+      img
     }
   }
 `;

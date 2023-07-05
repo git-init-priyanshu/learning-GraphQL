@@ -9,7 +9,7 @@ const Navbar = () => {
       >
         <div className="container-fluid">
           <a className="navbar-brand" href="#">
-            Navbar
+            Graphql App
           </a>
           <button
             className="navbar-toggler"
